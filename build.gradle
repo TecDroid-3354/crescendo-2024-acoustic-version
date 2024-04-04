@@ -1,0 +1,75 @@
+plugins {
+    id "cpp"
+    id "google-test-test-suite"
+    id "edu.wpi.first.GradleRIO" version "2024.3.2"
+}
+
+deploy {
+    targets {
+        roborio(getTargetTypeClass('RoboRIO')) {
+            team = project.frc.getTeamNumber()
+            debug = project.frc.getDebugOrDefault(false)
+
+            artifacts {
+                frcCpp(getArtifactTypeClass('FRCNativeArtifact')) {
+                }
+
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('resources')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
+        }
+    }
+}
+
+def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
+def includeDesktopSupport = false
+wpi.cpp.debugSimulation = false
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
+
+model {
+    components {
+        frcUserProgram(NativeExecutableSpec) {
+            targetPlatform wpi.platforms.roborio
+            if (includeDesktopSupport) {
+                targetPlatform wpi.platforms.desktop
+            }
+
+            sources.cpp {
+                source {
+                    srcDir 'src'
+                    include '**/*.cc'
+                }
+                exportedHeaders {
+                    srcDir 'src'
+                }
+            }
+
+            deployArtifact.component = it
+            wpi.cpp.enableExternalTasks(it)
+            wpi.sim.enable(it)
+            wpi.cpp.vendor.cpp(it)
+            wpi.cpp.deps.wpilib(it)
+        }
+    }
+    testSuites {
+        frcUserProgramTest(GoogleTestTestSuiteSpec) {
+            testing $.components.frcUserProgram
+
+            sources.cpp {
+                source {
+                    srcDir 'test'
+                    include '**/*.cc'
+                }
+            }
+
+            wpi.cpp.enableExternalTasks(it)
+
+            wpi.cpp.vendor.cpp(it)
+            wpi.cpp.deps.wpilib(it)
+            wpi.cpp.deps.googleTest(it)
+        }
+    }
+}
