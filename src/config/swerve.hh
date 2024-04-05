@@ -4,6 +4,7 @@
 
 #include <frc/geometry/Translation2d.h>
 
+#include "cancoder.hh"
 #include "pid.hh"
 #include "rev.hh"
 
@@ -12,7 +13,7 @@ struct swerve_module {
     spark_max azimuth_controller_config;
     spark_max propulsion_controller_config;
 
-    neo_encoder azimuth_encoder_config;
+    cancoder    cancoder_config;
     neo_encoder propulsion_encoder_config;
 
     pid_controller azimuth_pid_config;

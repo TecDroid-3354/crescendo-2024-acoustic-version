@@ -3,9 +3,11 @@
 #include <functional>
 #include <units/angle.h>
 
+#include <ctre/phoenix6/CANcoder.hpp>
+
+#include "config/cancoder.hh"
 #include "config/pid.hh"
 #include "config/rev.hh"
-#include "util/sm_observable.hh"
 
 namespace td::swerve {
 
@@ -14,7 +16,7 @@ public:
 
     explicit azimuthal_motor(
             config::spark_max      spark_max_config,
-            config::neo_encoder    neo_encoder_config,
+            config::cancoder       encoder_config,
             config::pid_controller pid_controller_config);
 
     auto
@@ -27,23 +29,20 @@ public:
     set_target_angle(units::degree_t angle) noexcept -> void;
 
     [[nodiscard]] auto
-    get_current_angle() const noexcept -> units::degree_t;
+    get_current_angle() noexcept -> units::degree_t;
 
     [[nodiscard]] auto
     get_target_angle() const noexcept -> units::degree_t;
 
     [[nodiscard]] auto
-    expose_pid_controller() noexcept -> frc::PIDController &;
-
-    auto
-    log() const noexcept -> void;
+    expose_pid_controller() noexcept -> frc::PIDController *;
 
 
 private:
 
-    rev::CANSparkMax          controller;
-    rev::SparkRelativeEncoder encoder;
-    frc::PIDController        pid_controller;
+    rev::CANSparkMax                   controller;
+    ctre::phoenix6::hardware::CANcoder encoder;
+    frc::PIDController                 pid_controller;
 
     units::degree_t target_angle;
 };

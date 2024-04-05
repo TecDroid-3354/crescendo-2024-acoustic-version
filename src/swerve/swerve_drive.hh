@@ -43,7 +43,16 @@ public:
     drive(frc::ChassisSpeeds const &speed) noexcept -> void;
 
     auto
-    log() const noexcept -> void;
+    expose_front_right_module() noexcept -> individual_module *;
+
+    auto
+    expose_front_left_module() noexcept -> individual_module *;
+
+    auto
+    expose_back_left_module() noexcept -> individual_module *;
+
+    auto
+    expose_back_right_module() noexcept -> individual_module *;
 
 private:
 
@@ -59,4 +68,5 @@ private:
 
     swerve_mode current_mode;
 };
+
 } // namespace td::swerve

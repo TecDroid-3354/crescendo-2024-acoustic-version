@@ -49,10 +49,10 @@ constexpr units::degrees_per_second_t target_angular_velocity = 360.0_deg_per_s;
 constexpr units::second_t propulsion_ramp_rate = 0.25_s;
 constexpr units::second_t azimuthal_ramp_rate  = 0.25_s;
 
-constexpr config::pid_controller propulsion_pid_config = { .p          = 0.0,
+constexpr config::pid_controller propulsion_pid_config = { .p          = 0.55,
                                                            .i          = 0.0,
                                                            .d          = 0.0,
-                                                           .tolerance  = 0.1,
+                                                           .tolerance  = 0.001,
                                                            .ci_enabled = false
 
 };
@@ -144,15 +144,15 @@ constexpr config::spark_max azimuthal_back_right_controller_config = { //
     .is_inverted      = false
 };
 
-constexpr config::neo_encoder azimuthal_encoder_config = { //
-    .position_conversion_factor = azimuthal_output_position_conversion_factor,
-    .velocity_conversion_factor = 1.0
-};
+constexpr config::cancoder front_right_cancoder_config { .id = 13 };
+constexpr config::cancoder front_left_cancoder_config { .id = 23 };
+constexpr config::cancoder back_left_cancoder_config { .id = 33 };
+constexpr config::cancoder back_right_cancoder_config { .id = 43 };
 
 constexpr config::swerve_drive swerve_drive_config = {
     .front_right = {.azimuth_controller_config    = azimuthal_front_right_controller_config,
                     .propulsion_controller_config = propulsion_front_right_controller_config,
-                    .azimuth_encoder_config       = azimuthal_encoder_config,
+                    .cancoder_config              = front_right_cancoder_config,
                     .propulsion_encoder_config    = propulsion_encoder_config,
                     .azimuth_pid_config           = azimuthal_pid_config,
                     .propulsion_pid_config        = propulsion_pid_config,
@@ -162,7 +162,7 @@ constexpr config::swerve_drive swerve_drive_config = {
 
     .front_left = { .azimuth_controller_config    = azimuthal_front_left_controller_config,
                     .propulsion_controller_config = propulsion_front_left_controller_config,
-                    .azimuth_encoder_config       = azimuthal_encoder_config,
+                    .cancoder_config              = front_left_cancoder_config,
                     .propulsion_encoder_config    = propulsion_encoder_config,
                     .azimuth_pid_config           = azimuthal_pid_config,
                     .propulsion_pid_config        = propulsion_pid_config,
@@ -170,7 +170,7 @@ constexpr config::swerve_drive swerve_drive_config = {
 
     .back_left = { .azimuth_controller_config    = azimuthal_back_left_controller_config,
                     .propulsion_controller_config = propulsion_back_left_controller_config,
-                    .azimuth_encoder_config       = azimuthal_encoder_config,
+                    .cancoder_config              = back_left_cancoder_config,
                     .propulsion_encoder_config    = propulsion_encoder_config,
                     .azimuth_pid_config           = azimuthal_pid_config,
                     .propulsion_pid_config        = propulsion_pid_config,
@@ -178,7 +178,7 @@ constexpr config::swerve_drive swerve_drive_config = {
 
     .back_right = { .azimuth_controller_config    = azimuthal_back_right_controller_config,
                     .propulsion_controller_config = propulsion_back_right_controller_config,
-                    .azimuth_encoder_config       = azimuthal_encoder_config,
+                    .cancoder_config              = back_right_cancoder_config,
                     .propulsion_encoder_config    = propulsion_encoder_config,
                     .azimuth_pid_config           = azimuthal_pid_config,
                     .propulsion_pid_config        = propulsion_pid_config,

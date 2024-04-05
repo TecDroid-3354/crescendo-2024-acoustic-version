@@ -8,72 +8,72 @@ robot::robot() = default;
 
 auto
 robot::RobotInit() -> void {
-    _container.robot_init();
+    container.robot_init();
 }
 
 auto
 robot::RobotPeriodic() -> void {
     frc2::CommandScheduler::GetInstance().Run();
-    _container.robot_periodic();
+    container.robot_periodic();
 }
 
 auto
 robot::DisabledInit() -> void {
-    _container.disabled_init();
+    container.disabled_init();
 }
 
 auto
 robot::DisabledPeriodic() -> void {
-    _container.disabled_periodic();
+    container.disabled_periodic();
 }
 
 auto
 robot::DisabledExit() -> void {
-    _container.disabled_exit();
+    container.disabled_exit();
 }
 
 auto
 robot::AutonomousInit() -> void {
-    _container.autonomous_init();
+    container.autonomous_init();
 }
 
 auto
 robot::AutonomousPeriodic() -> void {
-    _container.autonomous_periodic();
+    container.autonomous_periodic();
 }
 
 auto
 robot::AutonomousExit() -> void {
-    _container.autonomous_exit();
+    container.autonomous_exit();
 }
 
 auto
 robot::TeleopInit() -> void {
-    _container.teleop_init();
+    container.teleop_init();
 }
 
 auto
 robot::TeleopPeriodic() -> void {
-    _container.teleop_periodic();
+    container.teleop_periodic();
 }
 
 auto
 robot::TeleopExit() -> void {
-    _container.teleop_exit();
+    container.teleop_exit();
 }
 
 auto
 robot::TestInit() -> void {
-    _container.test_init();
+    container.test_init();
 }
 
 auto
 robot::TestPeriodic() -> void {
-    _container.test_periodic();
+    container.test_periodic();
 }
 
 auto
 robot::TestExit() -> void {
-    _container.test_exit();
+    container.test_exit();
 }
 } // namespace td

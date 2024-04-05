@@ -24,8 +24,12 @@ public:
 
 private:
 
-    std::function<units::degree_t()> target_angle_provider;
-    std::function<units::degree_t()> current_angle_provider;
+    std::function<units::degree_t()> target_angle_provider = [this]() {
+        return 0.0_deg;
+    };
+    std::function<units::degree_t()> current_angle_provider = [this]() {
+        return 0.0_deg;
+    };
 };
 
 } // namespace td::provider

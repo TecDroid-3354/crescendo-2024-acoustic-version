@@ -30,10 +30,7 @@ public:
     get_target_velocity() const noexcept -> units::meters_per_second_t;
 
     [[nodiscard]] auto
-    expose_pid_controller() noexcept -> frc::PIDController &;
-
-    auto
-    log() const noexcept -> void;
+    expose_pid_controller() noexcept -> frc::PIDController *;
 
 
 private:

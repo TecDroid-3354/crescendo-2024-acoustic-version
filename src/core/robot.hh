@@ -61,6 +61,6 @@ public:
 
 private:
 
-    robot_container _container;
+    robot_container container;
 };
 } // namespace td

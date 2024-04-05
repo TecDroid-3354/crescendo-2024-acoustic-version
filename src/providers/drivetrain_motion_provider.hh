@@ -27,14 +27,17 @@ public:
     auto
     set_angular_velocity_provider(std::function<double()> const &provider) noexcept -> void;
 
-    auto
-    log() const noexcept -> void;
-
 private:
 
-    std::function<double()> normalized_forwards_velocity_provider;
-    std::function<double()> normalized_sideways_velocity_provider;
-    std::function<double()> normalized_angular_velocity_provider;
+    std::function<double()> normalized_forwards_velocity_provider = [this]() {
+        return 0.0;
+    };
+    std::function<double()> normalized_sideways_velocity_provider = [this]() {
+        return 0.0;
+    };
+    std::function<double()> normalized_angular_velocity_provider = [this]() {
+        return 0.0;
+    };
 };
 
 } // namespace td::provider

@@ -4,7 +4,7 @@ namespace td::swerve {
 
 individual_module::individual_module(config::swerve_module const &config)
     : offset { config.offset }
-    , azimuth { config.azimuth_controller_config, config.azimuth_encoder_config, config.azimuth_pid_config }
+    , azimuth { config.azimuth_controller_config, config.cancoder_config, config.azimuth_pid_config }
     , propulsion { config.propulsion_controller_config,
                    config.propulsion_encoder_config,
                    config.propulsion_pid_config } { }
@@ -28,7 +28,7 @@ individual_module::set_target_state(frc::SwerveModuleState const &state) noexcep
 }
 
 auto
-individual_module::current_angle() const noexcept -> units::degree_t {
+individual_module::current_angle() noexcept -> units::degree_t {
     return azimuth.get_current_angle();
 }
 
@@ -53,19 +53,13 @@ individual_module::center_offset() const noexcept -> frc::Translation2d {
 }
 
 auto
-individual_module::expose_azimuth_pid() noexcept -> frc::PIDController & {
+individual_module::expose_azimuth_pid() noexcept -> frc::PIDController * {
     return azimuth.expose_pid_controller();
 }
 
 auto
-individual_module::expose_propulsion_pid() noexcept -> frc::PIDController & {
+individual_module::expose_propulsion_pid() noexcept -> frc::PIDController * {
     return propulsion.expose_pid_controller();
-}
-
-auto
-individual_module::log() const noexcept -> void {
-    azimuth.log();
-    propulsion.log();
 }
 
 } // namespace td::swerve

@@ -1,10 +1,26 @@
 #include "drivetrain_motion_provider.hh"
 
-#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/shuffleboard/Shuffleboard.h>
+
+#include "constants/strings.hh"
 
 namespace td::provider {
 
-drivetrain_motion_provider::drivetrain_motion_provider() = default;
+drivetrain_motion_provider::drivetrain_motion_provider() {
+    frc::ShuffleboardTab &dt_logs = frc::Shuffleboard::GetTab(k::str::DRIVETRAIN_LOGS_TAB);
+
+    dt_logs.AddNumber("[DTP] Normalized forwards output", [this]() {
+        return get_forwards_velocity_output();
+    });
+
+    dt_logs.AddNumber("[DTP] Normalized sideways output", [this]() {
+        return get_sideways_velocity_output();
+    });
+
+    dt_logs.AddNumber("[DTP] Normalized angular output", [this]() {
+        return get_angular_velocity_output();
+    });
+}
 
 auto
 drivetrain_motion_provider::get_forwards_velocity_output() const noexcept -> double {
@@ -34,13 +50,6 @@ drivetrain_motion_provider::set_sideways_velocity_provider(std::function<double(
 auto
 drivetrain_motion_provider::set_angular_velocity_provider(std::function<double()> const &provider) noexcept -> void {
     this->normalized_angular_velocity_provider = provider;
-}
-
-auto
-drivetrain_motion_provider::log() const noexcept -> void {
-    frc::SmartDashboard::PutNumber("[DTP] Normalized forwards output", get_forwards_velocity_output());
-    frc::SmartDashboard::PutNumber("[DTP] Normalized sideways output", get_sideways_velocity_output());
-    frc::SmartDashboard::PutNumber("[DTP] Normalized angular output", get_angular_velocity_output());
 }
 
 } // namespace td::provider

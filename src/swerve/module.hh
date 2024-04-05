@@ -25,7 +25,7 @@ public:
     set_target_state(frc::SwerveModuleState const &state) noexcept -> void;
 
     [[nodiscard]] auto
-    current_angle() const noexcept -> units::degree_t;
+    current_angle() noexcept -> units::degree_t;
 
     [[nodiscard]] auto
     current_velocity() const noexcept -> units::meters_per_second_t;
@@ -40,13 +40,10 @@ public:
     center_offset() const noexcept -> frc::Translation2d;
 
     [[nodiscard]] auto
-    expose_azimuth_pid() noexcept -> frc::PIDController &;
+    expose_azimuth_pid() noexcept -> frc::PIDController *;
 
     [[nodiscard]] auto
-    expose_propulsion_pid() noexcept -> frc::PIDController &;
-
-    auto
-    log() const noexcept -> void;
+    expose_propulsion_pid() noexcept -> frc::PIDController *;
 
 private:
 

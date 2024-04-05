@@ -16,6 +16,6 @@ struct pid_controller {
 };
 
 [[nodiscard]] auto
-mkpid_controller(pid_controller const &config) noexcept -> frc::PIDController &&;
+mkpid_controller(pid_controller const &config) noexcept -> frc::PIDController;
 
 } // namespace td::config

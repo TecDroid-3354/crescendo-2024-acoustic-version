@@ -7,6 +7,7 @@
 #include "constants/port.hh"
 #include "status/robot_mode.hh"
 #include "swerve/swerve_drive.hh"
+#include "util/sb_pid_observer.hh"
 
 namespace td {
 
@@ -79,6 +80,30 @@ private:
     std::shared_ptr<provider::drivetrain_data_provider> data_provider {
         std::make_shared<provider::drivetrain_data_provider>()
     };
+
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////// TESTING /////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    // util::sb_pid_observer prop_pid {
+    //     "propulsion",
+    //     {
+    //       drivetrain.expose_front_right_module()->expose_propulsion_pid(),
+    //       drivetrain.expose_front_left_module()->expose_propulsion_pid(),
+    //       drivetrain.expose_back_left_module()->expose_propulsion_pid(),
+    //       drivetrain.expose_back_right_module()->expose_propulsion_pid(),
+    //       }
+    // };
+
+    // util::sb_pid_observer azim_pid {
+    //     "azimuth",
+    //     {
+    //       drivetrain.expose_front_right_module()->expose_azimuth_pid(),
+    //       drivetrain.expose_front_left_module()->expose_azimuth_pid(),
+    //       drivetrain.expose_back_left_module()->expose_azimuth_pid(),
+    //       drivetrain.expose_back_right_module()->expose_azimuth_pid(),
+    //       }
+    // };
 };
 
 } // namespace td

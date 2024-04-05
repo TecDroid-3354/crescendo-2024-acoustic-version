@@ -40,9 +40,13 @@ swerve_drive::engage_motion_provider(
 
     this->SetDefaultCommand(frc2::cmd::Run(
             [this]() {
-                double normalized_forwards = this->motion_provider->get_forwards_velocity_output();
-                double normalized_sideways = this->motion_provider->get_sideways_velocity_output();
-                double normalized_angular  = this->motion_provider->get_angular_velocity_output();
+                double normalized_forwards =
+                        std::clamp(this->motion_provider->get_forwards_velocity_output(), -1.0, 1.0);
+
+                double normalized_sideways =
+                        std::clamp(this->motion_provider->get_sideways_velocity_output(), -1.0, 1.0);
+
+                double normalized_angular = std::clamp(this->motion_provider->get_angular_velocity_output(), -1.0, 1.0);
 
                 frc::ChassisSpeeds chassis_speeds;
 
@@ -79,13 +83,23 @@ swerve_drive::drive(frc::ChassisSpeeds const &speed) noexcept -> void {
 }
 
 auto
-swerve_drive::log() const noexcept -> void {
-    front_right.log();
-    front_left.log();
-    back_left.log();
-    back_right.log();
-    motion_provider->log();
-    data_provider->log();
+swerve_drive::expose_front_right_module() noexcept -> individual_module * {
+    return &front_right;
+}
+
+auto
+swerve_drive::expose_front_left_module() noexcept -> individual_module * {
+    return &front_left;
+}
+
+auto
+swerve_drive::expose_back_left_module() noexcept -> individual_module * {
+    return &back_left;
+}
+
+auto
+swerve_drive::expose_back_right_module() noexcept -> individual_module * {
+    return &back_right;
 }
 
 } // namespace td::swerve

@@ -1,7 +1,10 @@
 #include "propulsion_motor.hh"
 
-#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/Commands.h>
+
+#include "constants/drive.hh"
+#include "constants/strings.hh"
 
 namespace td::swerve {
 
@@ -14,6 +17,30 @@ propulsion_motor::propulsion_motor(
     , pid_controller { mkpid_controller(pid_controller_config) } {
     configure_spark(controller, spark_max_config);
     configure_neo_encoder(encoder, neo_encoder_config);
+
+    frc::ShuffleboardTab &dt_logs = frc::Shuffleboard::GetTab(k::str::DRIVETRAIN_LOGS_TAB);
+
+    dt_logs.AddNumber(
+                   fmt::format("[{}] Propulsion Velocity: Target", controller.GetDeviceId()),
+                   [this]() {
+                       return get_target_velocity().value();
+    })
+            .WithWidget(frc::BuiltInWidgets::kNumberBar)
+            .WithProperties({
+                    { "min", nt::Value::MakeDouble(-k::swerve::target_linear_velocity.value()) },
+                    { "max", nt::Value::MakeDouble(k::swerve::target_linear_velocity.value()) },
+            });
+
+    dt_logs.AddNumber(
+                   fmt::format("[{}] Propulsion Velocity: Current", controller.GetDeviceId()),
+                   [this]() {
+                       return get_current_velocity().value();
+    })
+            .WithWidget(frc::BuiltInWidgets::kNumberBar)
+            .WithProperties({
+                    { "min", nt::Value::MakeDouble(-k::swerve::target_linear_velocity.value()) },
+                    { "max", nt::Value::MakeDouble(k::swerve::target_linear_velocity.value()) },
+            });
 }
 
 auto
@@ -41,19 +68,8 @@ propulsion_motor::get_target_velocity() const noexcept -> units::meters_per_seco
 }
 
 auto
-propulsion_motor::expose_pid_controller() noexcept -> frc::PIDController & {
-    return pid_controller;
-}
-
-auto
-propulsion_motor::log() const noexcept -> void {
-    frc::SmartDashboard::PutNumber(
-            fmt::format("[{}] Propulsion Velocity: Target", controller.GetDeviceId()),
-            get_target_velocity().value());
-
-    frc::SmartDashboard::PutNumber(
-            fmt::format("[{}] Propulsion Velocity: Current", controller.GetDeviceId()),
-            get_current_velocity().value());
+propulsion_motor::expose_pid_controller() noexcept -> frc::PIDController * {
+    return &pid_controller;
 }
 
 } // namespace td::swerve

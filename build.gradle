@@ -24,7 +24,7 @@ deploy {
 }
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
-def includeDesktopSupport = false
+def includeDesktopSupport = true
 wpi.cpp.debugSimulation = false
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
