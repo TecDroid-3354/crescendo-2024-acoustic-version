@@ -1,13 +1,25 @@
 #pragma once
 
+#include <frc2/command/Command.h>
+#include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
 
-#include "constants/drive.hh"
+#include "config/auto/autonomous_config.hh"
+#include "constants/climber.hh"
+#include "constants/drivetrain/swerve.hh"
+#include "constants/indexer.hh"
+#include "constants/intake.hh"
 #include "constants/numeric.hh"
 #include "constants/port.hh"
+#include "constants/shooter.hh"
 #include "status/robot_mode.hh"
+#include "subsystems/climber/climber.hh"
+#include "subsystems/indexer/indexer.hh"
+#include "subsystems/intake/intake.hh"
+#include "subsystems/shooter/shooter.hh"
+#include "subsystems/shooter/shooter_positioner.hh"
 #include "swerve/swerve_drive.hh"
-#include "util/sb_pid_observer.hh"
+#include "tejuino/TejuinoBoard.hh"
 
 namespace td {
 
@@ -60,50 +72,70 @@ public:
     test_exit() noexcept -> void;
 
     [[nodiscard]] auto
+    get_autonomous_command() -> frc2::Command *;
+
+    [[nodiscard]] auto
     mode() const noexcept -> status::robot_mode;
 
     auto
     set_mode(status::robot_mode const &mode) noexcept -> void;
 
+    [[nodiscard]] auto
+    toggle_mode() -> frc2::CommandPtr;
+
+    auto
+    configure_keybinds() noexcept -> void;
+
+    auto
+    configure_providers() noexcept -> void;
+
+    auto
+    configure_auto() noexcept -> void;
+
 private:
 
     status::robot_mode current_mode;
+    TejuinoBoard       led_controller;
 
-    frc2::CommandXboxController controller_a { k::controller_a_port };
-    // frc2::CommandXboxController controller_b { k::controller_b_port };
+    frc2::CommandXboxController controller_a { k::port::controller_a };
 
-    swerve::swerve_drive drivetrain { k::swerve::swerve_drive_config };
+    sub::swerve::swerve_drive drivetrain { k::dt::swerve::swerve_drive_config };
+    auton::autonomous_config  auto_config { &drivetrain };
 
-    std::shared_ptr<provider::drivetrain_motion_provider> motion_provider {
-        std::make_shared<provider::drivetrain_motion_provider>()
+    sub::shooter_positioner shooter_positioner { k::shooter::position::controller_config_a,
+                                                 k::shooter::position::controller_config_b,
+                                                 k::shooter::position::encoder_config,
+                                                 k::shooter::position::pid_controller_config };
+    sub::shooter shooter { k::shooter::spin::controller_config_bottom, k::shooter::spin::controller_config_top };
+
+    sub::intake  intake { k::intake::controller_config };
+    sub::indexer indexer { k::indexer::controller_config };
+
+    sub::climber climber { k::climber::left_controller_config,
+                           k::climber::right_controller_config,
+                           k::climber::encoder_config,
+                           k::climber::encoder_config };
+
+    std::function<double()> controlled_forwards_motion_source = [this]() {
+        if (controller_a.GetPOV() == 0) return 0.5;
+        if (controller_a.GetPOV() == 180) return -0.5;
+
+        return -this->controller_a.GetLeftY();
     };
-    std::shared_ptr<provider::drivetrain_data_provider> data_provider {
-        std::make_shared<provider::drivetrain_data_provider>()
+
+    std::function<double()> controlled_sideways_motion_source = [this]() {
+        if (controller_a.GetPOV() == 90) return -0.5;
+        if (controller_a.GetPOV() == 270) return 0.5;
+        return -this->controller_a.GetLeftX();
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////// TESTING /////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
+    std::function<double()> controlled_angular_motion_source = [this]() {
+        return -this->controller_a.GetRightX();
+    };
 
-    // util::sb_pid_observer prop_pid {
-    //     "propulsion",
-    //     {
-    //       drivetrain.expose_front_right_module()->expose_propulsion_pid(),
-    //       drivetrain.expose_front_left_module()->expose_propulsion_pid(),
-    //       drivetrain.expose_back_left_module()->expose_propulsion_pid(),
-    //       drivetrain.expose_back_right_module()->expose_propulsion_pid(),
-    //       }
-    // };
-
-    // util::sb_pid_observer azim_pid {
-    //     "azimuth",
-    //     {
-    //       drivetrain.expose_front_right_module()->expose_azimuth_pid(),
-    //       drivetrain.expose_front_left_module()->expose_azimuth_pid(),
-    //       drivetrain.expose_back_left_module()->expose_azimuth_pid(),
-    //       drivetrain.expose_back_right_module()->expose_azimuth_pid(),
-    //       }
-    // };
+    std::function<bool()> is_climbing_cb = [this]() {
+        return mode() == status::robot_mode::CLIMBING;
+    };
 };
 
 } // namespace td

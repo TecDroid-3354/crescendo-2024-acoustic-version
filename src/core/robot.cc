@@ -1,5 +1,6 @@
 #include "robot.hh"
 
+#include <frc2/command/Command.h>
 #include <frc2/command/CommandScheduler.h>
 
 namespace td {
@@ -35,6 +36,10 @@ robot::DisabledExit() -> void {
 auto
 robot::AutonomousInit() -> void {
     container.autonomous_init();
+    frc2::Command *cmd = container.get_autonomous_command();
+    if (cmd == nullptr) return;
+
+    cmd->Schedule();
 }
 
 auto
@@ -50,6 +55,10 @@ robot::AutonomousExit() -> void {
 auto
 robot::TeleopInit() -> void {
     container.teleop_init();
+    frc2::Command *cmd = container.get_autonomous_command();
+    if (cmd == nullptr || !cmd->IsScheduled()) return;
+
+    cmd->Cancel();
 }
 
 auto

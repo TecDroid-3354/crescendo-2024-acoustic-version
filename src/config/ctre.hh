@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-namespace td::config {
+namespace td::cfg {
 
 struct cancoder {
     uint8_t id;
 };
 
-} // namespace td::config
+} // namespace td::cfg

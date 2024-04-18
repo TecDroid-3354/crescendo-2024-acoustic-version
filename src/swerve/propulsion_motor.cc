@@ -1,60 +1,64 @@
 #include "propulsion_motor.hh"
 
 #include <frc/shuffleboard/Shuffleboard.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
 
-#include "constants/drive.hh"
+#include "constants/drivetrain/propulsion.hh"
 #include "constants/strings.hh"
+#include "constants/widgets/swerve.hh"
 
-namespace td::swerve {
+namespace td::sub::swerve {
 
 propulsion_motor::propulsion_motor(
-        config::spark_max      spark_max_config,
-        config::neo_encoder    neo_encoder_config,
-        config::pid_controller pid_controller_config)
-    : controller { spark_max_config.id, spark_max_config.motor_type }
+        cfg::spark_max_config          controller_config,
+        cfg::encoder_output_parameters encoder_config,
+        cfg::spark_pid_config          pid_controller_config)
+    : controller { controller_config.identity.id, controller_config.identity.motor_type }
     , encoder { controller.GetEncoder() }
-    , pid_controller { mkpid_controller(pid_controller_config) } {
-    configure_spark(controller, spark_max_config);
-    configure_neo_encoder(encoder, neo_encoder_config);
+    , pid_controller { controller.GetPIDController() } {
+    cfg::configure_spark_max(&controller, controller_config);
+    cfg::configure_relative_encoder(&encoder, encoder_config);
+    cfg::configure_spark_pid(&pid_controller, pid_controller_config);
 
-    frc::ShuffleboardTab &dt_logs = frc::Shuffleboard::GetTab(k::str::DRIVETRAIN_LOGS_TAB);
+    int id_minor = controller_config.identity.id % 10;
+    int id_major = controller_config.identity.id / 10 % 10;
 
-    dt_logs.AddNumber(
-                   fmt::format("[{}] Propulsion Velocity: Target", controller.GetDeviceId()),
-                   [this]() {
-                       return get_target_velocity().value();
+    frc::ShuffleboardTab &swerve_drive_logs = frc::Shuffleboard::GetTab(k::str::swerve_subsystem_tab);
+
+    swerve_drive_logs
+            .AddNumber(
+                    fmt::format("[{}] Propulsion Velocity: Current", controller.GetDeviceId()),
+                    [this]() {
+                        return get_current_velocity().value();
     })
             .WithWidget(frc::BuiltInWidgets::kNumberBar)
             .WithProperties({
-                    { "min", nt::Value::MakeDouble(-k::swerve::target_linear_velocity.value()) },
-                    { "max", nt::Value::MakeDouble(k::swerve::target_linear_velocity.value()) },
+                    { "min", nt::Value::MakeDouble(k::dt::prop::min_linear_velocity.value()) },
+                    { "max", nt::Value::MakeDouble(k::dt::prop::max_linear_velocity.value()) },
             });
 
-    dt_logs.AddNumber(
-                   fmt::format("[{}] Propulsion Velocity: Current", controller.GetDeviceId()),
-                   [this]() {
-                       return get_current_velocity().value();
+    swerve_drive_logs
+            .AddNumber(
+                    fmt::format("[{}] Propulsion Velocity: Target", controller.GetDeviceId()),
+                    [this]() {
+                        return get_target_velocity().value();
     })
             .WithWidget(frc::BuiltInWidgets::kNumberBar)
             .WithProperties({
-                    { "min", nt::Value::MakeDouble(-k::swerve::target_linear_velocity.value()) },
-                    { "max", nt::Value::MakeDouble(k::swerve::target_linear_velocity.value()) },
+                    { "min", nt::Value::MakeDouble(k::dt::prop::min_linear_velocity.value()) },
+                    { "max", nt::Value::MakeDouble(k::dt::prop::max_linear_velocity.value()) },
             });
 }
 
 auto
 propulsion_motor::update() noexcept -> void {
-    pid_controller.SetSetpoint(get_target_velocity().value());
-    double const controller_output = pid_controller.Calculate(get_current_velocity().value());
-    double const clamped_output    = std::clamp(controller_output, -1.0, 1.0);
-
-    controller.Set(clamped_output);
+    pid_controller.SetReference(get_target_velocity().value(), rev::CANSparkLowLevel::ControlType::kVelocity);
 }
 
 auto
 propulsion_motor::set_target_velocity(units::meters_per_second_t const &velocity) noexcept -> void {
-    target_velocity = velocity;
+    target_velocity = std::move(velocity);
 }
 
 auto
@@ -68,8 +72,8 @@ propulsion_motor::get_target_velocity() const noexcept -> units::meters_per_seco
 }
 
 auto
-propulsion_motor::expose_pid_controller() noexcept -> frc::PIDController * {
-    return &pid_controller;
+propulsion_motor::get_travelled_distance() const noexcept -> units::meter_t {
+    return units::meter_t { -encoder.GetPosition() };
 }
 
-} // namespace td::swerve
+} // namespace td::sub::swerve

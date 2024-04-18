@@ -5,19 +5,19 @@
 
 #include <ctre/phoenix6/CANcoder.hpp>
 
-#include "config/cancoder.hh"
-#include "config/pid.hh"
+#include "config/ctre.hh"
+#include "config/pid_controller.hh"
 #include "config/rev.hh"
 
-namespace td::swerve {
+namespace td::sub::swerve {
 
 class azimuthal_motor {
 public:
 
     explicit azimuthal_motor(
-            config::spark_max      spark_max_config,
-            config::cancoder       encoder_config,
-            config::pid_controller pid_controller_config);
+            cfg::spark_max_config controller_config,
+            cfg::cancoder         cancoder_config,
+            cfg::pid_config       pid_config);
 
     auto
     update() noexcept -> void;
@@ -34,9 +34,6 @@ public:
     [[nodiscard]] auto
     get_target_angle() const noexcept -> units::degree_t;
 
-    [[nodiscard]] auto
-    expose_pid_controller() noexcept -> frc::PIDController *;
-
 
 private:
 
@@ -47,4 +44,4 @@ private:
     units::degree_t target_angle;
 };
 
-} // namespace td::swerve
+} // namespace td::sub::swerve

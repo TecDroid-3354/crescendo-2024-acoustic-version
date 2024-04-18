@@ -1,0 +1,119 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4234797894221796,
+        "y": 4.07449953277352
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.7851913465622102,
+        "y": 4.08922330502889
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.524405897488435,
+        "y": 5.549238466140914
+      },
+      "prevControl": {
+        "x": 1.7929037986959753,
+        "y": 5.547098168419582
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "DisableAll",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake.stop"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "indexer.stop"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter.stop"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "EnableShooter",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "shooter.speaker"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "EnableIntake",
+      "waypointRelativePos": 0.9,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intake.in"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "indexer.in"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": true
+}

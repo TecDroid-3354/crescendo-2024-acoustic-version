@@ -4,18 +4,18 @@
 
 #include <units/velocity.h>
 
-#include "config/pid.hh"
+#include "config/pid_controller.hh"
 #include "config/rev.hh"
 
-namespace td::swerve {
+namespace td::sub::swerve {
 
 class propulsion_motor {
 public:
 
     explicit propulsion_motor(
-            config::spark_max      spark_max_config,
-            config::neo_encoder    neo_encoder_config,
-            config::pid_controller pid_controller_config);
+            cfg::spark_max_config          controller_config,
+            cfg::encoder_output_parameters encoder_config,
+            cfg::spark_pid_config          pid_controller_config);
 
     auto
     update() noexcept -> void;
@@ -30,16 +30,16 @@ public:
     get_target_velocity() const noexcept -> units::meters_per_second_t;
 
     [[nodiscard]] auto
-    expose_pid_controller() noexcept -> frc::PIDController *;
+    get_travelled_distance() const noexcept -> units::meter_t;
 
 
 private:
 
     rev::CANSparkMax          controller;
     rev::SparkRelativeEncoder encoder;
-    frc::PIDController        pid_controller;
+    rev::SparkPIDController   pid_controller;
 
     units::meters_per_second_t target_velocity;
 };
 
-} // namespace td::swerve
+} // namespace td::sub::swerve

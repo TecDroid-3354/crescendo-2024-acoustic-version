@@ -1,8 +1,8 @@
 #include "module.hh"
 
-namespace td::swerve {
+namespace td::sub::swerve {
 
-individual_module::individual_module(config::swerve_module const &config)
+individual_module::individual_module(cfg::swerve_module_config const &config)
     : offset { config.offset }
     , azimuth { config.azimuth_controller_config, config.cancoder_config, config.azimuth_pid_config }
     , propulsion { config.propulsion_controller_config,
@@ -28,38 +28,43 @@ individual_module::set_target_state(frc::SwerveModuleState const &state) noexcep
 }
 
 auto
-individual_module::current_angle() noexcept -> units::degree_t {
+individual_module::get_current_angle() noexcept -> units::degree_t {
     return azimuth.get_current_angle();
 }
 
 auto
-individual_module::current_velocity() const noexcept -> units::meters_per_second_t {
-    return propulsion.get_current_velocity();
-}
-
-auto
-individual_module::target_angle() const noexcept -> units::degree_t {
+individual_module::get_target_angle() const noexcept -> units::degree_t {
     return target_state.angle.Degrees();
 }
 
 auto
-individual_module::target_velocity() const noexcept -> units::meters_per_second_t {
+individual_module::get_current_velocity() const noexcept -> units::meters_per_second_t {
+    return propulsion.get_current_velocity();
+}
+
+auto
+individual_module::get_target_velocity() const noexcept -> units::meters_per_second_t {
     return target_state.speed;
 }
 
 auto
-individual_module::center_offset() const noexcept -> frc::Translation2d {
+individual_module::get_travelled_distance() const noexcept -> units::meter_t {
+    return propulsion.get_travelled_distance();
+}
+
+auto
+individual_module::get_module_position() noexcept -> frc::SwerveModulePosition {
+    return frc::SwerveModulePosition { get_travelled_distance(), get_current_angle() };
+}
+
+auto
+individual_module::get_module_state() noexcept -> frc::SwerveModuleState {
+    return frc::SwerveModuleState { get_current_velocity(), get_current_angle() };
+}
+
+auto
+individual_module::get_offset_from_center() const noexcept -> frc::Translation2d {
     return offset;
 }
 
-auto
-individual_module::expose_azimuth_pid() noexcept -> frc::PIDController * {
-    return azimuth.expose_pid_controller();
-}
-
-auto
-individual_module::expose_propulsion_pid() noexcept -> frc::PIDController * {
-    return propulsion.expose_pid_controller();
-}
-
-} // namespace td::swerve
+} // namespace td::sub::swerve

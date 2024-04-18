@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.49,
+      "y": 6.96
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "StationAmpToShootAmp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootAmpToNoteAmp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteAmpToNoteCenter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NoteCenterToNoteSource"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
