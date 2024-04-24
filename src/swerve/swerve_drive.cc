@@ -59,7 +59,7 @@ swerve_drive::swerve_drive(cfg::swerve_drive_config const &config)
 
                     break;
                 case swerve_mode::FIELD_ORIENTED :
-                    units::degree_t current_angle = gyro.get_z_angle();
+                    units::degree_t current_angle = get_yaw();
                     chassis_speeds                = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
                             k::dt::tgt::linear_velocity * normalized_forwards,
                             k::dt::tgt::linear_velocity * normalized_sideways,
@@ -118,7 +118,7 @@ swerve_drive::align_with(std::function<units::degree_t()> target_cb, std::functi
 
             double output         = align_pid_controller.Calculate(target_cb().value());
             double clamped_output = std::clamp(std::move(output), k::ctrl::pid_output_min, k::ctrl::pid_output_max);
-            return std::move(output);
+            return std::move(clamped_output);
         });
     });
 }

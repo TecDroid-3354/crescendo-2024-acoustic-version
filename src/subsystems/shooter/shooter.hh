@@ -1,13 +1,14 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/SubsystemBase.h>
 
 #include "config/rev.hh"
 #include "constants/unittype.hh"
 
 namespace td::sub {
 
-class shooter {
+class shooter : public frc2::SubsystemBase {
 public:
 
     explicit shooter(
@@ -15,7 +16,7 @@ public:
             cfg::spark_max_config const &controller_config_top);
 
     [[nodiscard]] auto
-    set_velocity(std::function<double()> percentage_bottom, std::function<double()> percentage_top) noexcept
+    set_velocity(double percentage_bottom, double percentage_top) noexcept
             -> frc2::CommandPtr;
 
     [[nodiscard]] auto

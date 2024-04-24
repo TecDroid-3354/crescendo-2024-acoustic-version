@@ -36,10 +36,12 @@ robot::DisabledExit() -> void {
 auto
 robot::AutonomousInit() -> void {
     container.autonomous_init();
-    frc2::Command *cmd = container.get_autonomous_command();
-    if (cmd == nullptr) return;
 
-    cmd->Schedule();
+    auto_cmd = container.get_autonomous_command();
+    if (auto_cmd == nullptr) return;
+
+    auto_cmd->Schedule();
+
 }
 
 auto
@@ -54,11 +56,11 @@ robot::AutonomousExit() -> void {
 
 auto
 robot::TeleopInit() -> void {
-    container.teleop_init();
-    frc2::Command *cmd = container.get_autonomous_command();
-    if (cmd == nullptr || !cmd->IsScheduled()) return;
+    if (auto_cmd != nullptr && auto_cmd->IsScheduled()) {
+        auto_cmd->Cancel();
+    }
 
-    cmd->Cancel();
+    container.teleop_init();
 }
 
 auto

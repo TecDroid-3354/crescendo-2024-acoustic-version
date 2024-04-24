@@ -21,9 +21,6 @@ propulsion_motor::propulsion_motor(
     cfg::configure_relative_encoder(&encoder, encoder_config);
     cfg::configure_spark_pid(&pid_controller, pid_controller_config);
 
-    int id_minor = controller_config.identity.id % 10;
-    int id_major = controller_config.identity.id / 10 % 10;
-
     frc::ShuffleboardTab &swerve_drive_logs = frc::Shuffleboard::GetTab(k::str::swerve_subsystem_tab);
 
     swerve_drive_logs

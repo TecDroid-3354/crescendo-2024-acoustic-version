@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
+#include <frc2/command/SubsystemBase.h>
 
 #include "config/encoder.hh"
 #include "config/rev.hh"
@@ -8,7 +9,7 @@
 
 namespace td::sub {
 
-class indexer {
+class indexer : public frc2::SubsystemBase {
 public:
 
     explicit indexer(cfg::spark_max_config const &controller_config);

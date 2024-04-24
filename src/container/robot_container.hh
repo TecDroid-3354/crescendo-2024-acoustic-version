@@ -1,8 +1,10 @@
 #pragma once
 
+#include <frc/DigitalInput.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <frc/Timer.h>
 
 #include "config/auto/autonomous_config.hh"
 #include "constants/climber.hh"
@@ -12,6 +14,7 @@
 #include "constants/numeric.hh"
 #include "constants/port.hh"
 #include "constants/shooter.hh"
+#include "lib/limelight.hh"
 #include "status/robot_mode.hh"
 #include "subsystems/climber/climber.hh"
 #include "subsystems/indexer/indexer.hh"
@@ -92,7 +95,19 @@ public:
     auto
     configure_auto() noexcept -> void;
 
+    auto start_timer() -> frc2::CommandPtr;
+
+    auto stop_timer() -> frc2::CommandPtr;
+
+    auto reset_timer() -> frc2::CommandPtr;
+
+    auto get_iitime() -> units::second_t;
+
+    auto iitime_over_1s() -> bool;
+
 private:
+
+frc::Timer timer;
 
     status::robot_mode current_mode;
     TejuinoBoard       led_controller;
@@ -136,6 +151,11 @@ private:
     std::function<bool()> is_climbing_cb = [this]() {
         return mode() == status::robot_mode::CLIMBING;
     };
+
+    std::function<bool()> iitime_over_1s_cb = [this]() {
+        return iitime_over_1s();
+    };
+
 };
 
 } // namespace td

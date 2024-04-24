@@ -6,7 +6,7 @@
 
 namespace td::k::indexer {
 
-constexpr double target_percentage = 0.6;
+constexpr double target_percentage = 0.5;
 
 constexpr cfg::spark_max_config controller_config = {
     .identity = { .id = 2, .motor_type = rev::CANSparkBase::MotorType::kBrushless },

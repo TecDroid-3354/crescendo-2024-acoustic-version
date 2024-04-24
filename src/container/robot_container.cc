@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <frc/DriverStation.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
@@ -22,12 +23,10 @@ auto
 robot_container::robot_init() noexcept -> void {
     ll::init();
 
-    frc::SmartDashboard::PutNumber("DBG SHT Bottom Vel", k::shooter::spin::amp_bottom_target_percentage);
-    frc::SmartDashboard::PutNumber("DBG SHT Top Vel", k::shooter::spin::amp_top_target_percentage);
-
     frc::ShuffleboardTab &dt_tab = frc::Shuffleboard::GetTab(k::str::drive_team_tab);
 
     dt_tab.AddBoolean("Climbing", is_climbing_cb);
+    // dt_tab.AddBoolean("Has Note", lswitch_cb);
 
     led_controller.init(led_controller.TEJUINO_DEVICE_NUMBER_0);
 
@@ -129,49 +128,113 @@ robot_container::configure_keybinds() noexcept -> void {
     // >> Shooter position << //
 
     controller_a.RightTrigger(k::shooter::position::activation_trigger_threshold)
-            .OnTrue(shooter_positioner.enable_target_tracking())
-            .OnFalse(shooter_positioner.disable_target_tracking());
-
-    controller_a.Y()
             .OnTrue(frc2::cmd::Sequence(
-                    shooter_positioner.set_fixed_target(k::shooter::position::amp_target_angle),
-                    shooter_positioner.enable_fixed_targetting(),
-                    shooter_positioner.enable_target_tracking()))
+                    shooter_positioner.disable_fixed_targetting(),
+                    shooter_positioner.enable_target_tracking()).AlongWith(
+                        frc2::cmd::Parallel(reset_timer(), start_timer())
+                    ))
             .OnFalse(frc2::cmd::Sequence(
-                    shooter_positioner.disable_target_tracking(),
-                    shooter_positioner.disable_fixed_targetting()));
+                    shooter_positioner.disable_fixed_targetting(),
+                    shooter_positioner.disable_target_tracking()).AlongWith(
+                        frc2::cmd::Parallel(stop_timer(), reset_timer())
+                    ));
+
+   controller_a.Y()
+           .OnTrue(frc2::cmd::Either(
+                   frc2::cmd::None(),
+                   frc2::cmd::Sequence(
+                           shooter_positioner.set_fixed_target(k::shooter::position::amp_target_angle),
+                           shooter_positioner.enable_fixed_targetting(),
+                           shooter_positioner.enable_target_tracking()),
+                   is_climbing_cb))
+           .OnFalse(frc2::cmd::Sequence(
+                   shooter_positioner.disable_target_tracking(),
+                   shooter_positioner.stop(),
+                   shooter_positioner.disable_fixed_targetting()));
+
+   controller_a.B()
+           .OnTrue(frc2::cmd::Either(
+                   frc2::cmd::None(),
+                   frc2::cmd::Sequence(
+                           shooter_positioner.set_fixed_target(k::shooter::position::pass_target_angle),
+                           shooter_positioner.enable_fixed_targetting(),
+                           shooter_positioner.enable_target_tracking()),
+                   is_climbing_cb))
+           .OnFalse(frc2::cmd::Sequence(
+                   shooter_positioner.disable_target_tracking(),
+                   shooter_positioner.stop(),
+                   shooter_positioner.disable_fixed_targetting()));
+
+   controller_a.A()
+           .OnTrue(frc2::cmd::Either(
+                   frc2::cmd::None(),
+                   frc2::cmd::Sequence(
+                           shooter_positioner.set_fixed_target(k::shooter::position::home_angle),
+                           shooter_positioner.enable_fixed_targetting(),
+                           shooter_positioner.enable_target_tracking())
+
+                           ,
+                   is_climbing_cb))
+           .OnFalse(frc2::cmd::Sequence(
+                   shooter_positioner.disable_target_tracking(),
+                   shooter_positioner.stop(),
+                   shooter_positioner.disable_fixed_targetting()));
+
+   controller_a.X()
+           .OnTrue(frc2::cmd::Either(
+                   frc2::cmd::None(),
+                   frc2::cmd::Sequence(
+                           shooter_positioner.set_fixed_target(k::shooter::position::lowpass_target_angle),
+                           shooter_positioner.enable_fixed_targetting(),
+                           shooter_positioner.enable_target_tracking())
+
+                           ,
+                   is_climbing_cb))
+           .OnFalse(frc2::cmd::Sequence(
+                   shooter_positioner.disable_target_tracking(),
+                   shooter_positioner.stop(),
+                   shooter_positioner.disable_fixed_targetting()));
 
     // >> Shooter Spin << //
 
     controller_a.RightTrigger(k::shooter::spin::activation_trigger_threshold)
             .OnTrue(shooter.set_velocity(
-                    []() {
-                        return k::shooter::spin::speaker_target_percentage;
-                    },
-                    []() {
-                        return k::shooter::spin::speaker_target_percentage;
-                    }))
+                    k::shooter::spin::speaker_target_percentage,
+                    k::shooter::spin::speaker_target_percentage)
+                        .AlongWith(
+                                frc2::cmd::Parallel()
+                        )
+                    )
             .OnFalse(shooter.stop());
 
     controller_a.LeftTrigger(k::shooter::spin::activation_trigger_threshold)
             .OnTrue(shooter.set_velocity(
-                    []() {
-                        return -k::shooter::spin::speaker_target_percentage;
-                    },
-                    []() {
-                        return -k::shooter::spin::speaker_target_percentage;
-                    }))
+                    -k::shooter::spin::speaker_target_percentage,
+                    -k::shooter::spin::speaker_target_percentage))
             .OnFalse(shooter.stop());
 
-    controller_a.Y()
-            .OnTrue(shooter.set_velocity(
-                    [this]() {
-                        return frc::SmartDashboard::GetNumber("DBG SHT Bottom Vel", 0.0);
-                    },
-                    [this]() {
-                        return frc::SmartDashboard::GetNumber("DBG SHT Top Vel", 0.0);
-                    }))
-            .OnFalse(shooter.stop());
+//    controller_a.Y()
+//            .OnTrue(frc2::cmd::Either(
+//                    frc2::cmd::None(),
+//                    shooter.set_velocity(
+//                            k::shooter::spin::amp_bottom_target_percentage,
+//                            k::shooter::spin::amp_top_target_percentage),
+//                    is_climbing_cb))
+//            .OnFalse(shooter.stop());
+//
+//    controller_a.B()
+//            .OnTrue(frc2::cmd::Either(
+//                    frc2::cmd::None(),
+//                    shooter.set_velocity(k::shooter::spin::pass_percentage, k::shooter::spin::pass_percentage),
+//                    is_climbing_cb))
+//            .OnFalse(shooter.stop());
+//
+//    controller_a.X()
+//            .OnTrue(frc2::cmd::Either(
+//                    frc2::cmd::None(),
+//                    shooter.set_velocity(k::shooter::spin::pass_percentage, k::shooter::spin::pass_percentage),
+//                    is_climbing_cb))
+//            .OnFalse(shooter.stop());
 
     // >> Drivetrain << //
 
@@ -183,13 +246,15 @@ robot_container::configure_keybinds() noexcept -> void {
 
     // >> Intake, Indexer & Hooks << //
 
+    // lswitch.OnTrue(intake.stop().AlongWith(indexer.stop()));
+
     controller_a.RightBumper()
             .OnTrue(frc2::cmd::Either(
                     climber.lower_hooks(),
                     frc2::cmd::Parallel(
                             intake.set_percentage(k::intake::target_percentage),
-                            indexer.set_percentage(k::indexer::target_percentage)),
-                    is_climbing_cb))
+                            indexer.set_percentage(k::indexer::target_percentage))
+                            , is_climbing_cb))
             .OnFalse(frc2::cmd::Parallel(climber.stop(), intake.stop(), indexer.stop()));
 
     controller_a.LeftBumper()
@@ -201,11 +266,19 @@ robot_container::configure_keybinds() noexcept -> void {
                     is_climbing_cb))
             .OnFalse(frc2::cmd::Parallel(climber.stop(), intake.stop(), indexer.stop()));
 
-    controller_a.X()
+    (controller_a.X() && controller_a.Start())
             .OnTrue(frc2::cmd::Either(climber.lower_left(-0.5), frc2::cmd::None(), is_climbing_cb))
             .OnFalse(climber.stop());
 
-    controller_a.B()
+    (controller_a.B() && controller_a.Start())
+            .OnTrue(frc2::cmd::Either(climber.lower_left(0.5), frc2::cmd::None(), is_climbing_cb))
+            .OnFalse(climber.stop());
+
+    (controller_a.Y() && controller_a.Start())
+            .OnTrue(frc2::cmd::Either(climber.lower_right(0.5), frc2::cmd::None(), is_climbing_cb))
+            .OnFalse(climber.stop());
+
+    (controller_a.A() && controller_a.Start())
             .OnTrue(frc2::cmd::Either(climber.lower_right(-0.5), frc2::cmd::None(), is_climbing_cb))
             .OnFalse(climber.stop());
 
@@ -220,6 +293,8 @@ robot_container::configure_providers() noexcept -> void {
     drivetrain.set_rotation_motion_fallback_source(controlled_angular_motion_source);
 
     shooter_positioner.set_target_angle_source([this]() {
+        if (ll::has_no_targets()) { return shooter_positioner.get_current_angle(); }
+
         units::meter_t target_height = ll::get_height_of_target_type();
         units::meter_t diff          = target_height - ll::mount_height;
         units::meter_t dtt           = ll::get_distance_to_target();
@@ -234,18 +309,41 @@ robot_container::configure_providers() noexcept -> void {
 auto
 robot_container::configure_auto() noexcept -> void {
     pathplanner::NamedCommands::registerCommand(
-            "prep-shooter",
+            "intake",
             frc2::cmd::Parallel(
-                    drivetrain.align_with(ll::get_horizontal_angle_to_target, ll::has_no_targets),
+                    intake.set_percentage(k::intake::target_percentage),
+                    indexer.set_percentage(k::indexer::target_percentage))
+                    .WithTimeout(1.5_s)
+                    .AndThen(frc2::cmd::Parallel(intake.stop(), indexer.stop())));
+
+    pathplanner::NamedCommands::registerCommand(
+            "shoot",
+            frc2::cmd::Parallel(
+                    drivetrain.align_with(ll::get_horizontal_angle_to_target, ll::has_no_targets)
+                            .AndThen(frc2::cmd::Wait(2_s))
+                            .AndThen(frc2::cmd::RunOnce([this]() {
+                                this->drivetrain.set_rotation_motion_source(controlled_angular_motion_source);
+                            })),
+
                     shooter.set_velocity(
-                            [this]() {
-                                return k::shooter::spin::speaker_target_percentage;
-                            },
-                            [this]() {
-                                return k::shooter::spin::speaker_target_percentage;
-                            }),
-                    shooter_positioner.enable_target_tracking())
-                    .AndThen(frc2::cmd::Wait(1_s)));
+                                   k::shooter::spin::speaker_target_percentage,
+                                   k::shooter::spin::speaker_target_percentage)
+                            .AndThen(frc2::cmd::Wait(2_s))
+                            .AndThen(shooter.stop()),
+
+                    frc2::cmd::Sequence(
+                            shooter_positioner.disable_fixed_targetting(),
+                            shooter_positioner.enable_target_tracking())
+                            .AndThen(frc2::cmd::Wait(2_s))
+                            .AndThen(shooter_positioner.disable_target_tracking()),
+
+                    frc2::cmd::Wait(1.25_s)
+                            .AndThen(frc2::cmd::Parallel(
+                                    intake.set_percentage(k::intake::target_percentage),
+                                    indexer.set_percentage(k::indexer::target_percentage)))
+                            .AndThen(frc2::cmd::Wait(0.75_s))
+                            .AndThen(frc2::cmd::Parallel(intake.stop(), indexer.stop())))
+                    .WithTimeout(2.25_s));
 
     pathplanner::NamedCommands::registerCommand(
             "drivetrain.llalign",
@@ -257,6 +355,39 @@ robot_container::configure_auto() noexcept -> void {
                                                 }));
 
     auto_config.load_existing_commands();
+}
+
+auto robot_container::start_timer() -> frc2::CommandPtr {
+        return frc2::cmd::RunOnce(
+                [this] () {
+                        timer.Start();
+                }
+        );
+}
+
+auto robot_container::stop_timer() -> frc2::CommandPtr {
+        return frc2::cmd::RunOnce(
+                [this] () {
+                        timer.Stop();
+                }
+        );
+}
+
+auto robot_container::reset_timer() -> frc2::CommandPtr {
+        return frc2::cmd::RunOnce(
+                [this] () {
+                        timer.Stop();
+                        timer.Reset();
+                }
+        );
+}
+
+auto robot_container::get_iitime() -> units::second_t {
+        return timer.Get();
+}
+
+auto robot_container::iitime_over_1s() -> bool {
+        return timer.Get() > 1_s;
 }
 
 } // namespace td

@@ -23,9 +23,6 @@ azimuthal_motor::azimuthal_motor(
     cfg::configure_spark_max(&controller, spark_max_config);
     cfg::configure_pid_controller(&pid_controller, pid_config);
 
-    int id_minor = spark_max_config.identity.id % 10;
-    int id_major = spark_max_config.identity.id / 10 % 10;
-
     frc::ShuffleboardTab &swerve_drive_logs = frc::Shuffleboard::GetTab(k::str::swerve_subsystem_tab);
     frc::ShuffleboardTab &swerve_pid_logs   = frc::Shuffleboard::GetTab(k::str::swerve_pid_manipulation_tab);
 

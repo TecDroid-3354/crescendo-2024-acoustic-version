@@ -1,6 +1,8 @@
 #pragma once
 
 #include <frc/TimedRobot.h>
+#include <frc2/command/Command.h>
+
 #include "container/robot_container.hh"
 
 namespace td {
@@ -62,5 +64,6 @@ public:
 private:
 
     robot_container container;
+    frc2::Command* auto_cmd;
 };
 } // namespace td

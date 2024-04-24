@@ -39,6 +39,8 @@ public:
     auto
     disable_fixed_targetting() noexcept -> frc2::CommandPtr;
 
+    auto reach_fixed_target() noexcept -> frc2::CommandPtr;
+
     auto
     set_fixed_target(units::degree_t angle) noexcept -> frc2::CommandPtr;
 
@@ -59,6 +61,8 @@ public:
 
     auto
     md_break() -> frc2::CommandPtr;
+
+    auto stop() -> frc2::CommandPtr;
 
 private:
 

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.122509647781091,
-        "y": 5.4735531105124355
+        "x": 2.0013392754058237,
+        "y": 5.531946336619947
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.527616344070433,
+        "x": 2.4957628097074376,
         "y": 5.544736460589148
       },
       "prevControl": {
-        "x": 2.0187790116661937,
-        "y": 5.589904122846221
+        "x": 2.178585448079987,
+        "y": 5.550603828480384
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,53 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "DisableAll",
-      "waypointRelativePos": 0.1,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intake.stop"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "indexer.stop"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter.stop"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "EnableShooter",
-      "waypointRelativePos": 0.5,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter.speaker"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "EnableIntake",
+      "name": "Intake",
       "waypointRelativePos": 0.9,
       "command": {
         "type": "parallel",
@@ -87,13 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "intake.in"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "indexer.in"
+                "name": "intake"
               }
             }
           ]

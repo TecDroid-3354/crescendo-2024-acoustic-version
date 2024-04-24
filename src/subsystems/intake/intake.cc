@@ -15,14 +15,14 @@ auto
 intake::set_percentage(double percentage) noexcept -> frc2::CommandPtr {
     return frc2::cmd::RunOnce([this, percentage]() {
         this->controller.Set(percentage);
-    });
+    }, {this});
 }
 
 auto
 intake::stop() noexcept -> frc2::CommandPtr {
     return frc2::cmd::RunOnce([this]() {
-        this->controller.StopMotor();
-    });
+        this->controller.Set(0.0);
+    }, {this});
 }
 
 } // namespace td::sub

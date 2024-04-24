@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2726638456729162,
+        "x": 1.3949707899415797,
         "y": 5.54222714601931
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6109415906979112,
+        "x": 1.7332485349665747,
         "y": 5.525436879412309
       },
       "isLocked": false,
@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.1971248545489037,
+        "x": 2.197242939940425,
         "y": 5.54222714601931
       },
       "prevControl": {
-        "x": 1.9380012235283393,
+        "x": 1.9381193089198607,
         "y": 5.551157353753143
       },
       "nextControl": null,
@@ -30,65 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "EnableAlign",
-      "waypointRelativePos": 0.75,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter_pos.dynamic"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "EnableShooter",
-      "waypointRelativePos": 0.85,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "shooter.speaker"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "ShootNote",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "indexer.in"
-              }
-            },
-            {
-              "type": "named",
-              "data": {
-                "name": "intake.in"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

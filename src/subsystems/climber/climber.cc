@@ -47,11 +47,11 @@ climber::lower_hooks() -> frc2::CommandPtr {
                     right_controller.Set(-k::climber::speed);
                 }
                 else
-                    right_controller.StopMotor();
+                    right_controller.Set(0.0);
 
                 if (get_left_hook_position() > k::climber::bottom_boundary) { left_controller.Set(-k::climber::speed); }
                 else
-                    left_controller.StopMotor();
+                    left_controller.Set(0.0);
             },
             { this });
 }
@@ -62,11 +62,11 @@ climber::raise_hooks() -> frc2::CommandPtr {
             [this]() {
                 if (get_right_hook_position() < k::climber::top_boundary) { right_controller.Set(k::climber::speed); }
                 else
-                    right_controller.StopMotor();
+                    right_controller.Set(0.0);
 
                 if (get_left_hook_position() < k::climber::top_boundary) { left_controller.Set(k::climber::speed); }
                 else
-                    left_controller.StopMotor();
+                    left_controller.Set(0.0);
             },
             { this });
 }
@@ -89,8 +89,8 @@ auto
 climber::stop() -> frc2::CommandPtr {
     return frc2::cmd::RunOnce(
             [this]() {
-                right_controller.StopMotor();
-                left_controller.StopMotor();
+                right_controller.Set(0.0);
+                left_controller.Set(0.0);
             },
             { this });
 }

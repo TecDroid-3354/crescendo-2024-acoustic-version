@@ -15,23 +15,22 @@ shooter::shooter(
     cfg::configure_spark_max(&controller_bottom, controller_config_bottom);
     cfg::configure_spark_max(&controller_top, controller_config_top);
 
-    frc::ShuffleboardTab &shooter_log_tab = frc::Shuffleboard::GetTab(k::str::shooter_subsystem_tab);
 }
 
 auto
-shooter::set_velocity(std::function<double()> percentage_bottom, std::function<double()> percentage_top) noexcept
+shooter::set_velocity(double percentage_bottom, double percentage_top) noexcept
         -> frc2::CommandPtr {
     return frc2::cmd::RunOnce([this, percentage_bottom, percentage_top]() {
-        this->controller_bottom.Set(percentage_bottom());
-        this->controller_top.Set(percentage_top());
+        this->controller_bottom.Set(percentage_bottom);
+        this->controller_top.Set(percentage_top);
     });
 }
 
 auto
 shooter::stop() noexcept -> frc2::CommandPtr {
     return frc2::cmd::RunOnce([this]() {
-        this->controller_bottom.StopMotor();
-        this->controller_top.StopMotor();
+        this->controller_bottom.Set(0.0);
+        this->controller_top.Set(0.0);
     });
 }
 

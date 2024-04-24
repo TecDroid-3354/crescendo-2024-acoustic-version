@@ -7,8 +7,8 @@
 
 namespace td::k::climber {
 
-constexpr units::meter_t bottom_boundary = -100.0_m;
-constexpr units::meter_t top_boundary    = 5.0_m;
+constexpr units::meter_t bottom_boundary = 0.0_m;
+constexpr units::meter_t top_boundary    = 4.75_m;
 
 constexpr double gear_ratio = 4.0 * 4.0 * 3.0;
 

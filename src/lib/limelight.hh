@@ -56,10 +56,4 @@ get_target_type() noexcept -> target_type;
 [[nodiscard]] auto
 get_height_of_target_type() -> units::meter_t;
 
-[[nodiscard]] auto
-enable() -> frc2::CommandPtr;
-
-[[nodiscard]] auto
-disable() -> frc2::CommandPtr;
-
 } // namespace td::ll
