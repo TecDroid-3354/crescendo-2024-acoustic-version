@@ -7,11 +7,16 @@
 
 namespace td::k::climber {
 
+/// @brief Climber min rope windup
 constexpr units::meter_t bottom_boundary = 0.0_m;
-constexpr units::meter_t top_boundary    = 4.75_m;
 
+// @brief Climber max rope windup
+constexpr units::meter_t top_boundary = 4.75_m;
+
+/// @brief Climber gear ratio
 constexpr double gear_ratio = 4.0 * 4.0 * 3.0;
 
+/// @brief Main climber speed coefficient
 constexpr double speed = 0.8;
 
 constexpr cfg::spark_max_config left_controller_config = {

@@ -6,11 +6,13 @@
 
 namespace td::k::dt::swerve {
 
+/// @brief PID for chassis turn-to-angle
 constexpr cfg::pid_config angle_turn_pid_config = {
     .coefficients      = { .p = 0.02, .i = 0.0, .d = 0.0015 },
     .output_parameters = { .tolerance = 0.001, .ci_enabled = true, .ci_min = -180.0, .ci_max = +180.0 }
 };
 
+/// @brief PID for limelight targetting
 constexpr cfg::pid_config align_pid_config = {
     .coefficients      = { .p = 0.025, .i = 0.01, .d = 0.0015 },
     .output_parameters = { .tolerance = 0.001, .ci_enabled = false, .ci_min = 0.0, .ci_max = 0.0 }

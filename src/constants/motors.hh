@@ -4,6 +4,7 @@
 
 namespace td::k::motors {
 
+/// @brief NEO max RPM
 constexpr units::turns_per_minute_t neo_max_rpm = units::turns_per_minute_t { 5676.0 };
 
 } // namespace td::k::motors

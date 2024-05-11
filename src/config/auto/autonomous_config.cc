@@ -25,20 +25,26 @@ autonomous_config::autonomous_config(sub::swerve::swerve_drive *drivetrain_ptr)
     frc::ShuffleboardTab &operator_tab = frc::Shuffleboard::GetTab(k::str::drive_team_tab);
     operator_tab.Add("Autonomous Routine", chooser);
 
+    // Configures pathplanner to use the drivetrain's methods to drive
     pathplanner::AutoBuilder::configureHolonomic(
+            // Lambda to get robot's pose
             [this]() {
                 return this->drivetrain->get_pose();
             },
+            // Lambda to set robot's pose
             [this](frc::Pose2d pose) {
                 this->drivetrain->set_pose(pose);
             },
+            // Lambda to get robot's speeds
             [this]() {
                 return this->drivetrain->get_current_speeds();
             },
+            // Lambda to drive the robot
             [this](frc::ChassisSpeeds speeds) {
                 return this->drivetrain->drive(speeds);
             },
 
+            // PID coefficients
             pathplanner::HolonomicPathFollowerConfig { pathplanner::PIDConstants(
                                                                k::auton::move_coefficients.p,
                                                                k::auton::move_coefficients.i,
@@ -51,6 +57,7 @@ autonomous_config::autonomous_config(sub::swerve::swerve_drive *drivetrain_ptr)
                                                        k::dt::ms::module_forwards_offset,
                                                        pathplanner::ReplanningConfig {} },
             []() {
+                // Invert path if alliance is red
                 auto alliance = frc::DriverStation::GetAlliance();
                 if (alliance.has_value()) { return alliance.value() == frc::DriverStation::Alliance::kRed; }
                 return false;
@@ -62,10 +69,14 @@ auto
 autonomous_config::load_existing_commands() -> void {
     int num = 1;
 
+    // Default command: No auto
     commands["None"] = std::move(frc2::cmd::None().Unwrap());
     chooser.SetDefaultOption("0 - None", "None");
 
+    // Fetch deploy directory
     auto deploy_directory = frc::filesystem::GetDeployDirectory() + "/pathplanner/autos";
+
+    // For each file, if it is an auto file, load and add
     for (auto const &file : std::filesystem::directory_iterator(deploy_directory)) {
         if (!file.is_regular_file()) continue;
         std::string filename = file.path().stem();
@@ -79,7 +90,10 @@ autonomous_config::load_existing_commands() -> void {
 
 auto
 autonomous_config::get_selected_auto() -> frc2::Command * {
+    // Selected Command's Name
     std::string selected = chooser.GetSelected();
+
+    // Fetch from command map
     return commands[selected].get();
 }
 

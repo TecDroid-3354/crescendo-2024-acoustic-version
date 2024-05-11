@@ -4,12 +4,19 @@
 
 namespace td::k::dt::azim {
 
-constexpr units::degree_t full_turn        = 360_deg;
+/// @brief A full turn in degrees
+constexpr units::degree_t full_turn = 360_deg;
+
+/// @brief Min angle that a swerve can turn
 constexpr units::degree_t module_angle_min = -180.0_deg;
+
+/// @brief Max angle that a swerve can turn
 constexpr units::degree_t module_angle_max = +180.0_deg;
 
+/// @brief Azimuthal ramp rate
 constexpr units::second_t ramp_rate = 0.25_s;
 
+/// @brief Global azimuthal PID config
 constexpr cfg::pid_config pid_config = {
     .coefficients      = { .p = 0.01, .i = 0.0, .d = 0.00035 },
     .output_parameters = { .tolerance  = 0.01,

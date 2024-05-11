@@ -23,6 +23,7 @@ azimuthal_motor::azimuthal_motor(
     cfg::configure_spark_max(&controller, spark_max_config);
     cfg::configure_pid_controller(&pid_controller, pid_config);
 
+    // Data logging
     frc::ShuffleboardTab &swerve_drive_logs = frc::Shuffleboard::GetTab(k::str::swerve_subsystem_tab);
     frc::ShuffleboardTab &swerve_pid_logs   = frc::Shuffleboard::GetTab(k::str::swerve_pid_manipulation_tab);
 
@@ -51,6 +52,8 @@ azimuthal_motor::azimuthal_motor(
 
 auto
 azimuthal_motor::update() noexcept -> void {
+    // Calculate the percentage at which the motor should be set to reach
+    // The target angle
     double const target_angle      = get_target_angle().value();
     double const current_angle     = get_current_angle().value();
     double const controller_output = pid_controller.Calculate(std::move(current_angle), std::move(target_angle));

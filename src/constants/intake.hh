@@ -6,6 +6,7 @@
 
 namespace td::k::intake {
 
+/// @brief Target percentage when active
 constexpr double target_percentage = 0.6;
 
 constexpr cfg::spark_max_config controller_config = {

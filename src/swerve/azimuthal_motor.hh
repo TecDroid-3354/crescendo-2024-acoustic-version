@@ -19,18 +19,32 @@ public:
             cfg::cancoder         cancoder_config,
             cfg::pid_config       pid_config);
 
+    /// @brief Updates the system's PID controller to reach the target angle
+    /// @return Nothing
     auto
     update() noexcept -> void;
 
+    /// @brief Sets the current angle.
+    /// DOES NOT MAKE THE WHEEL REACH THIS ANGLE.
+    /// It merely overrides the encoder's position
+    /// @param angle
+    /// @return
     auto
     set_current_angle(units::degree_t angle) noexcept -> void;
 
+    /// @brief Sets the angle at which the wheel should be positioned
+    /// @param angle
+    /// @return
     auto
     set_target_angle(units::degree_t angle) noexcept -> void;
 
+    /// @brief Returns the current wheel angle
+    /// @return The wheel's current angle
     [[nodiscard]] auto
     get_current_angle() noexcept -> units::degree_t;
 
+    /// @brief Returns the target wheel angle
+    /// @return The wheel's target angle
     [[nodiscard]] auto
     get_target_angle() const noexcept -> units::degree_t;
 

@@ -2,6 +2,8 @@
 
 namespace td::k::widgets {
 
+// For automatic widget placement
+
 unsigned int constexpr gyro_x_row    = 0;
 unsigned int constexpr gyro_x_column = 0;
 

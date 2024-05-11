@@ -43,12 +43,14 @@ auto
 climber::lower_hooks() -> frc2::CommandPtr {
     return frc2::cmd::Run(
             [this]() {
+                // Basic bang-bang style limits
                 if (get_right_hook_position() > k::climber::bottom_boundary) {
                     right_controller.Set(-k::climber::speed);
                 }
                 else
                     right_controller.Set(0.0);
 
+                // Basic bang-bang style limits
                 if (get_left_hook_position() > k::climber::bottom_boundary) { left_controller.Set(-k::climber::speed); }
                 else
                     left_controller.Set(0.0);
@@ -60,29 +62,17 @@ auto
 climber::raise_hooks() -> frc2::CommandPtr {
     return frc2::cmd::Run(
             [this]() {
+                // Basic bang-bang style limits
                 if (get_right_hook_position() < k::climber::top_boundary) { right_controller.Set(k::climber::speed); }
                 else
                     right_controller.Set(0.0);
 
+                // Basic bang-bang style limits
                 if (get_left_hook_position() < k::climber::top_boundary) { left_controller.Set(k::climber::speed); }
                 else
                     left_controller.Set(0.0);
             },
             { this });
-}
-
-[[nodiscard]] auto
-climber::lower_right(double percentage) -> frc2::CommandPtr {
-    return frc2::cmd::RunOnce([this, percentage]() {
-        this->right_controller.Set(percentage);
-    });
-}
-
-[[nodiscard]] auto
-climber::lower_left(double percentage) -> frc2::CommandPtr {
-    return frc2::cmd::RunOnce([this, percentage]() {
-        this->left_controller.Set(percentage);
-    });
 }
 
 auto
