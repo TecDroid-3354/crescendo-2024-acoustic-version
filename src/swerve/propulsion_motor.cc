@@ -21,6 +21,7 @@ propulsion_motor::propulsion_motor(
     cfg::configure_relative_encoder(&encoder, encoder_config);
     cfg::configure_spark_pid(&pid_controller, pid_controller_config);
 
+    // Data logging
     frc::ShuffleboardTab &swerve_drive_logs = frc::Shuffleboard::GetTab(k::str::swerve_subsystem_tab);
 
     swerve_drive_logs
@@ -50,6 +51,7 @@ propulsion_motor::propulsion_motor(
 
 auto
 propulsion_motor::update() noexcept -> void {
+    // Set the PIDF target, have the API do its thing
     pid_controller.SetReference(get_target_velocity().value(), rev::CANSparkLowLevel::ControlType::kVelocity);
 }
 
@@ -70,6 +72,7 @@ propulsion_motor::get_target_velocity() const noexcept -> units::meters_per_seco
 
 auto
 propulsion_motor::get_travelled_distance() const noexcept -> units::meter_t {
+    // Inverted because of planar conventions (TODO: Evaluate the effect when motor movement is backwards)
     return units::meter_t { -encoder.GetPosition() };
 }
 

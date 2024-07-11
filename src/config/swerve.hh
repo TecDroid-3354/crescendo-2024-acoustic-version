@@ -9,6 +9,8 @@
 #include "rev.hh"
 
 namespace td::cfg {
+
+/// @brief Swerve module config glob structure
 struct swerve_module_config {
     spark_max_config azimuth_controller_config;
     spark_max_config propulsion_controller_config;
@@ -22,6 +24,7 @@ struct swerve_module_config {
     frc::Translation2d offset;
 };
 
+/// @brief Swerve drive config glob structure
 struct swerve_drive_config {
     swerve_module_config front_right;
     swerve_module_config front_left;

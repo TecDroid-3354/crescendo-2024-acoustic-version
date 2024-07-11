@@ -2,6 +2,8 @@
 
 namespace td::k::widgets {
 
+// For automatic widget placement
+
 unsigned int constexpr propulsion_module_current_offset = 0;
 unsigned int constexpr propulsion_module_target_offset  = 1;
 

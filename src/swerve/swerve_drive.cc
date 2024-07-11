@@ -31,15 +31,19 @@ swerve_drive::swerve_drive(cfg::swerve_drive_config const &config)
     cfg::configure_pid_controller(&angle_pid_controller, config.angle_pid_config);
     cfg::configure_pid_controller(&align_pid_controller, config.align_pid_config);
 
+    // Setpoint to align to a target
     align_pid_controller.SetSetpoint(0.0);
 
+    // Data logging
     frc::ShuffleboardTab &swerve_pid_logs = frc::Shuffleboard::GetTab(k::str::swerve_pid_manipulation_tab);
 
     swerve_pid_logs.Add("Turning PID", angle_pid_controller);
     swerve_pid_logs.Add("Align PID", align_pid_controller);
 
+    // If the drivetrain is not doing any other command, run this
     this->SetDefaultCommand(frc2::cmd::Run(
             [this]() {
+                // Get coefficients
                 double normalized_forwards =
                         std::clamp(this->forwards_motion_source(), k::ctrl::pid_output_min, k::ctrl::pid_output_max);
 
@@ -51,14 +55,17 @@ swerve_drive::swerve_drive(cfg::swerve_drive_config const &config)
 
                 frc::ChassisSpeeds chassis_speeds;
 
+                // Apply coefficients based on robot mode
                 switch (current_mode) {
                 case swerve_mode::ROBOT_ORIENTED :
+                    // Direct factor-in
                     chassis_speeds = { k::dt::tgt::linear_velocity * normalized_forwards,
                                        k::dt::tgt::linear_velocity * normalized_sideways,
                                        k::dt::tgt::angular_velocity * normalized_angular };
 
                     break;
                 case swerve_mode::FIELD_ORIENTED :
+                    // Factor in, then apply field-relative rotation to speeds
                     units::degree_t current_angle = get_yaw();
                     chassis_speeds                = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
                             k::dt::tgt::linear_velocity * normalized_forwards,
@@ -75,6 +82,7 @@ swerve_drive::swerve_drive(cfg::swerve_drive_config const &config)
 
 auto
 swerve_drive::Periodic() -> void {
+    // Constantly update modules & odometry
     front_right.update();
     front_left.update();
     back_left.update();
@@ -88,6 +96,7 @@ auto
 swerve_drive::drive(frc::ChassisSpeeds const &speed) noexcept -> void {
     wpi::array<frc::SwerveModuleState, 4> states = kinematics.ToSwerveModuleStates(speed * -1.0);
 
+    // Assigns the target state to each swerve module. Optimizes it to rotate as least as possible
     front_right.set_target_state(front_right.optimize_state(states[front_right_idx]));
     front_left.set_target_state(front_left.optimize_state(states[front_left_idx]));
     back_left.set_target_state(back_left.optimize_state(states[back_left_idx]));
@@ -100,6 +109,7 @@ swerve_drive::turn_by_angle(units::degree_t angle) noexcept -> frc2::CommandPtr 
 
     frc::SmartDashboard::PutNumber("TARGET", target_angle.value());
 
+    // Build turn command using a PID on the current yaw
     return frc2::cmd::RunOnce([this, target_angle]() {
         set_rotation_motion_source([this, target_angle]() {
             double output         = angle_pid_controller.Calculate(get_yaw().value(), std::move(target_angle).value());

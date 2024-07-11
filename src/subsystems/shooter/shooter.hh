@@ -8,17 +8,22 @@
 
 namespace td::sub {
 
-class shooter : public frc2::SubsystemBase {
+class shooter: public frc2::SubsystemBase {
 public:
 
     explicit shooter(
             cfg::spark_max_config const &controller_config_bottom,
             cfg::spark_max_config const &controller_config_top);
 
+    /// @brief Set the wheel velocities
+    /// @param percentage_bottom Velocity percentage of the bottom wheel
+    /// @param percentage_top Velocity percentage of the top wheel
+    /// @return The command to execute
     [[nodiscard]] auto
-    set_velocity(double percentage_bottom, double percentage_top) noexcept
-            -> frc2::CommandPtr;
+    set_velocity(double percentage_bottom, double percentage_top) noexcept -> frc2::CommandPtr;
 
+    /// @brief Stop the subsystem
+    /// @return The command to execute
     [[nodiscard]] auto
     stop() noexcept -> frc2::CommandPtr;
 

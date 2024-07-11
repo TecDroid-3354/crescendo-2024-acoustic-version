@@ -6,6 +6,7 @@
 
 namespace td::k::indexer {
 
+/// @brief Target percentage when active
 constexpr double target_percentage = 0.5;
 
 constexpr cfg::spark_max_config controller_config = {
