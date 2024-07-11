@@ -1,0 +1,4 @@
+CompileFlags:
+    Add: ["-std=c++20", "-pedantic", "-Weverything", "-Wno-c++98-compat", "-Wno-pre-c++20-compat-pedantic"]
+    CompilationDatabase: build/TargetedCompileCommands/linuxx86-64release
+

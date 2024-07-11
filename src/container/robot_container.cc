@@ -255,6 +255,8 @@ robot_container::configure_keybinds() noexcept -> void {
 
     // Toggle shooting & climbing
     controller_a.Back().OnTrue(toggle_mode());
+
+    lswitch_trigger.OnTrue(frc2::cmd::Parallel(intake.stop(), indexer.stop()));
 }
 
 auto

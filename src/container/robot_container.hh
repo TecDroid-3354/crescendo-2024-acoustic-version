@@ -13,6 +13,7 @@
 #include "constants/numeric.hh"
 #include "constants/port.hh"
 #include "constants/shooter.hh"
+#include "frc2/command/button/Trigger.h"
 #include "lib/limelight.hh"
 #include "status/robot_mode.hh"
 #include "subsystems/climber/climber.hh"
@@ -138,6 +139,11 @@ private:
     std::function<bool()> is_climbing_cb = [this]() {
         return mode() == status::robot_mode::CLIMBING;
     };
+
+    frc::DigitalInput lswitch { k::port::lswitch_dio_pin };
+    frc2::Trigger     lswitch_trigger { [this] {
+        return this->lswitch.Get();
+    } };
 };
 
 } // namespace td
